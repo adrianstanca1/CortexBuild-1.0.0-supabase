@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
 import ErrorBoundary from './components/ErrorBoundary';
+import { Toaster } from 'react-hot-toast';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
@@ -15,6 +16,7 @@ root.render(
   <React.StrictMode>
     <ErrorBoundary>
       <App />
+      <Toaster position="top-right" />
     </ErrorBoundary>
   </React.StrictMode>
 );
