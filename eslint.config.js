@@ -6,7 +6,14 @@ import reactHooks from 'eslint-plugin-react-hooks';
 
 export default [
   {
-    ignores: ['dist/**'],
+    ignores: [
+      'dist/**',
+      '.vercel/**',
+      'public/sw.js',
+      '**/assets/**',
+      '__tests__/**',
+      'node_modules/**',
+    ],
   },
   js.configs.recommended,
   {
