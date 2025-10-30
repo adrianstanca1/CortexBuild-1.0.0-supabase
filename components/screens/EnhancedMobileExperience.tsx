@@ -237,18 +237,20 @@ const EnhancedMobileExperience: React.FC<EnhancedMobileExperienceProps> = ({
     }, []);
 
     const getStatusColor = (status: string) => {
-        const colors = {
+        const colors: Record<string, string> = {
+            // Task statuses (matches MobileTask interface)
             'todo': 'bg-gray-500',
             'in-progress': 'bg-blue-500',
             'completed': 'bg-green-500',
+            // User statuses
             'online': 'bg-green-500',
             'offline': 'bg-gray-500',
             'busy': 'bg-red-500',
+            // Project statuses
             'active': 'bg-green-500',
-            'planning': 'bg-blue-500',
-            'done': 'bg-gray-500'
+            'planning': 'bg-blue-500'
         };
-        return colors[status as keyof typeof colors] || 'bg-gray-500';
+        return colors[status] || 'bg-gray-500';
     };
 
     const getPriorityColor = (priority: string) => {
