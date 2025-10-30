@@ -640,7 +640,29 @@ const App: React.FC = () => {
                         isDarkMode={true}
                         onNavigate={(section) => {
                             console.log('Navigating to section:', section);
-                            toast.success(`Opening ${section}...`);
+                            showSuccess("Navigation", `Opening ${section}...`);
+                            // Map section IDs to actual screen navigation
+                            if (section === 'user-management') {
+                                navigateToModule('platform-admin', { tab: 'users' });
+                            } else if (section === 'company-management') {
+                                navigateToModule('platform-admin', { tab: 'companies' });
+                            } else if (section === 'billing-payments') {
+                                navigateToModule('advanced-analytics', {});
+                            } else if (section === 'analytics-reports') {
+                                navigateToModule('analytics-dashboard', {});
+                            } else if (section === 'system-settings') {
+                                navigateToModule('admin-control-panel', {});
+                            } else if (section === 'security-audit') {
+                                navigateToModule('platform-admin', { tab: 'security' });
+                            } else if (section === 'database-management') {
+                                navigateToModule('admin-control-panel', {});
+                            } else if (section === 'activity-monitoring') {
+                                navigateToModule('analytics-dashboard', {});
+                            } else if (section === 'notifications') {
+                                navigateToModule('collaboration-hub', {});
+                            } else if (section === 'integrations') {
+                                navigateToModule('integrations', {});
+                            }
                         }}
                     />
                 </Suspense>
@@ -675,7 +697,29 @@ const App: React.FC = () => {
                     isDarkMode={true}
                     onNavigate={(section) => {
                         console.log('Navigating to section:', section);
-                        toast.success(`Opening ${section}...`);
+                        showSuccess("Navigation", `Opening ${section}...`);
+                        // Map section IDs to actual screen navigation
+                        if (section === 'user-management') {
+                            navigateToModule('users', {});
+                        } else if (section === 'company-management') {
+                            navigateToModule('companies', {});
+                        } else if (section === 'billing-payments') {
+                            navigateToModule('billing', {});
+                        } else if (section === 'analytics-reports') {
+                            navigateToModule('analytics', {});
+                        } else if (section === 'system-settings') {
+                            navigateToModule('settings', {});
+                        } else if (section === 'security-audit') {
+                            navigateToModule('security', {});
+                        } else if (section === 'database-management') {
+                            navigateToModule('database', {});
+                        } else if (section === 'activity-monitoring') {
+                            navigateToModule('activity', {});
+                        } else if (section === 'notifications') {
+                            navigateToModule('notifications', {});
+                        } else if (section === 'integrations') {
+                            navigateToModule('integrations', {});
+                        }
                     }}
                 />
             </Suspense>
