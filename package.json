@@ -9,6 +9,7 @@
     "dev:all": "concurrently \"npm run dev\" \"npm run server\"",
     "build": "vite build",
     "preview": "vite preview",
+    "create:users": "tsx scripts/createSupabaseUsers.ts",
     "deploy": "npm run build && node deploy-ionos.cjs",
     "vercel:dev": "vercel dev",
     "vercel:deploy": "vercel",

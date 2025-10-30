@@ -160,7 +160,8 @@ const SCREEN_COMPONENTS: Record<Screen, React.ComponentType<any>> = {
     'automation-studio': ConstructionAutomationStudio,
     'developer-workspace': DeveloperWorkspaceScreen,
     'developer-console': EnhancedDeveloperConsole,
-    'super-admin-dashboard': SuperAdminDashboardScreen,
+    // Ensure super-admin points to a concrete component
+    'super-admin-dashboard': SuperAdminDashboardV2,
     'sdk-developer': ProductionSDKDeveloperView,
     'my-apps-desktop': Base44Clone,
     // Global Marketplace
@@ -667,8 +668,29 @@ const App: React.FC = () => {
     console.log('📺 Rendering screen:', screen);
     console.log('📺 Current user role:', currentUser?.role);
     console.log('📺 Navigation stack:', navigationStack);
+    // Direct render for known dashboards to avoid any mapping drift
+    if (screen === 'super-admin-dashboard') {
+        return (
+            <Suspense fallback={<ScreenLoader />}>
+                <SuperAdminDashboardV2
+                    isDarkMode={true}
+                    onNavigate={(section) => {
+                        console.log('Navigating to section:', section);
+                        toast.success(`Opening ${section}...`);
+                    }}
+                />
+            </Suspense>
+        );
+    }
+
     const ScreenComponent = SCREEN_COMPONENTS[screen] || PlaceholderToolScreen;
-    console.log('📺 Screen component:', ScreenComponent.name);
+    if (!ScreenComponent) {
+        console.error('📺 Screen component missing for:', screen);
+        return (
+            <div className="p-8 text-red-700">Screen not available: {screen}</div>
+        );
+    }
+    console.log('📺 Screen component:', (ScreenComponent as any).name);
 
     if (screen === 'my-apps-desktop') {
         return (
