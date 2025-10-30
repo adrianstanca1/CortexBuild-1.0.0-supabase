@@ -3,7 +3,7 @@
  * Advanced team oversight with performance tracking and resource allocation
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Users,
     UserPlus,
@@ -22,6 +22,7 @@ import {
     Briefcase
 } from 'lucide-react';
 import { User } from '../../types';
+import { supabase } from '../../supabaseClient';
 
 interface TeamMember {
     id: string;
@@ -46,53 +47,40 @@ interface EnhancedTeamManagementProps {
 }
 
 export const EnhancedTeamManagement: React.FC<EnhancedTeamManagementProps> = ({ currentUser, goBack }) => {
-    const [teamMembers, setTeamMembers] = useState<TeamMember[]>([
-        {
-            id: '1',
-            name: 'John Smith',
-            role: 'Project Manager',
-            email: 'john.smith@construction.com',
-            phone: '+1 555-0101',
-            status: 'active',
-            currentProject: 'Downtown Plaza',
-            tasksCompleted: 45,
-            tasksActive: 8,
-            hoursThisWeek: 38,
-            performanceScore: 95,
-            certifications: ['PMP', 'OSHA 30', 'LEED AP'],
-            skills: ['Project Management', 'Scheduling', 'Budgeting']
-        },
-        {
-            id: '2',
-            name: 'Sarah Johnson',
-            role: 'Site Supervisor',
-            email: 'sarah.j@construction.com',
-            phone: '+1 555-0102',
-            status: 'active',
-            currentProject: 'Riverside Complex',
-            tasksCompleted: 67,
-            tasksActive: 12,
-            hoursThisWeek: 42,
-            performanceScore: 98,
-            certifications: ['OSHA 30', 'First Aid', 'Forklift'],
-            skills: ['Site Management', 'Safety', 'Quality Control']
-        },
-        {
-            id: '3',
-            name: 'Mike Davis',
-            role: 'Superintendent',
-            email: 'mike.d@construction.com',
-            phone: '+1 555-0103',
-            status: 'busy',
-            currentProject: 'Harbor Development',
-            tasksCompleted: 89,
-            tasksActive: 15,
-            hoursThisWeek: 45,
-            performanceScore: 92,
-            certifications: ['OSHA 30', 'CPR', 'Scaffold'],
-            skills: ['Construction', 'Coordination', 'Inspections']
-        }
-    ]);
+    const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const load = async () => {
+            try {
+                if (!supabase) { setTeamMembers([]); return; }
+                const { data } = await supabase
+                    .from('team_members')
+                    .select('id, name, role, email, phone, status, hours_this_week, tasks_completed, certifications, skills, project:projects(name)')
+                    .order('name', { ascending: true });
+
+                const mapped: TeamMember[] = (data || []).map((row: any) => ({
+                    id: row.id,
+                    name: row.name,
+                    role: row.role,
+                    email: row.email || '',
+                    phone: row.phone || '',
+                    status: (row.status as TeamMember['status']) || 'active',
+                    currentProject: row.project?.name || undefined,
+                    tasksCompleted: Number(row.tasks_completed || 0),
+                    tasksActive: 0,
+                    hoursThisWeek: Number(row.hours_this_week || 0),
+                    performanceScore: 90, // placeholder metric until detailed scoring exists
+                    certifications: row.certifications || [],
+                    skills: row.skills || []
+                }));
+                setTeamMembers(mapped);
+            } finally {
+                setLoading(false);
+            }
+        };
+        load();
+    }, []);
 
     const [searchQuery, setSearchQuery] = useState('');
     const [filterRole, setFilterRole] = useState('all');
@@ -218,7 +206,7 @@ export const EnhancedTeamManagement: React.FC<EnhancedTeamManagementProps> = ({ 
 
                 {/* Team Members Grid/List */}
                 <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-4'}>
-                    {filteredMembers.map((member) => (
+                    {(loading ? [] : filteredMembers).map((member) => (
                         <div
                             key={member.id}
                             className="bg-white rounded-xl p-6 shadow-md border border-gray-200 hover:shadow-xl transition-all cursor-pointer"

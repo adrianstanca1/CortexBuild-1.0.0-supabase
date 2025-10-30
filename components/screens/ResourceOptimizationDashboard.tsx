@@ -3,7 +3,7 @@
  * Intelligent resource allocation, equipment tracking, and workforce optimization
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Package,
     Wrench,
@@ -19,6 +19,7 @@ import {
     BarChart3
 } from 'lucide-react';
 import { User } from '../../types';
+import { supabase } from '../../supabaseClient';
 
 interface Resource {
     id: string;
@@ -38,48 +39,35 @@ interface ResourceOptimizationDashboardProps {
 }
 
 export const ResourceOptimizationDashboard: React.FC<ResourceOptimizationDashboardProps> = ({ currentUser, goBack }) => {
-    const [resources, setResources] = useState<Resource[]>([
-        {
-            id: '1',
-            name: 'Tower Crane #1',
-            type: 'equipment',
-            status: 'in-use',
-            location: 'Downtown Plaza',
-            project: 'Downtown Plaza',
-            utilizationRate: 92,
-            costPerDay: 850,
-            nextMaintenance: new Date(Date.now() + 604800000)
-        },
-        {
-            id: '2',
-            name: 'Concrete Mixer Fleet',
-            type: 'equipment',
-            status: 'available',
-            location: 'Warehouse A',
-            utilizationRate: 65,
-            costPerDay: 450,
-            nextMaintenance: new Date(Date.now() + 1209600000)
-        },
-        {
-            id: '3',
-            name: 'Skilled Labor Pool',
-            type: 'labor',
-            status: 'in-use',
-            location: 'Multiple Sites',
-            utilizationRate: 88,
-            costPerDay: 3200
-        },
-        {
-            id: '4',
-            name: 'Steel Beams (Grade A)',
-            type: 'material',
-            status: 'reserved',
-            location: 'Storage Yard B',
-            project: 'Riverside Complex',
-            utilizationRate: 100,
-            costPerDay: 0
-        }
-    ]);
+    const [resources, setResources] = useState<Resource[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const load = async () => {
+            try {
+                if (!supabase) { setResources([]); return; }
+                const { data } = await supabase
+                    .from('resources')
+                    .select('id, name, type, status, location, utilization, daily_cost, project:projects(name)')
+                    .order('name', { ascending: true });
+                const mapped: Resource[] = (data || []).map((row: any) => ({
+                    id: row.id,
+                    name: row.name,
+                    type: row.type,
+                    status: row.status,
+                    location: row.location || '',
+                    project: row.project?.name || undefined,
+                    utilizationRate: Number(row.utilization || 0),
+                    costPerDay: Number(row.daily_cost || 0),
+                    nextMaintenance: undefined
+                }));
+                setResources(mapped);
+            } finally {
+                setLoading(false);
+            }
+        };
+        load();
+    }, []);
 
     const [viewMode, setViewMode] = useState<'overview' | 'equipment' | 'materials' | 'labor'>('overview');
 
@@ -208,7 +196,7 @@ export const ResourceOptimizationDashboard: React.FC<ResourceOptimizationDashboa
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200">
-                                {resources
+                                {(loading ? [] : resources)
                                     .filter(r => viewMode === 'overview' || r.type === viewMode.slice(0, -1))
                                     .map((resource) => (
                                         <tr key={resource.id} className="hover:bg-gray-50 transition-colors">

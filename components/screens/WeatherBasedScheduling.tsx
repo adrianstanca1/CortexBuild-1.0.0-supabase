@@ -19,6 +19,7 @@ import {
     Zap
 } from 'lucide-react';
 import { User } from '../../types';
+import { supabase } from '../../supabaseClient';
 
 interface WeatherForecast {
     date: Date;
@@ -45,78 +46,29 @@ export const WeatherBasedScheduling: React.FC<{ currentUser: User; goBack: () =>
     const [tasks, setTasks] = useState<ScheduledTask[]>([]);
 
     useEffect(() => {
-        // Mock weather forecast
-        const mockForecast: WeatherForecast[] = [
-            {
-                date: new Date(),
-                condition: 'sunny',
-                temp: 22,
-                windSpeed: 10,
-                precipitation: 0,
-                workable: true,
-                impactedTasks: 0
-            },
-            {
-                date: new Date(Date.now() + 86400000),
-                condition: 'cloudy',
-                temp: 19,
-                windSpeed: 15,
-                precipitation: 10,
-                workable: true,
-                impactedTasks: 0
-            },
-            {
-                date: new Date(Date.now() + 172800000),
-                condition: 'rainy',
-                temp: 16,
-                windSpeed: 25,
-                precipitation: 75,
-                workable: false,
-                impactedTasks: 8
-            },
-            {
-                date: new Date(Date.now() + 259200000),
-                condition: 'rainy',
-                temp: 15,
-                windSpeed: 30,
-                precipitation: 85,
-                workable: false,
-                impactedTasks: 12
-            },
-            {
-                date: new Date(Date.now() + 345600000),
-                condition: 'cloudy',
-                temp: 18,
-                windSpeed: 12,
-                precipitation: 20,
-                workable: true,
-                impactedTasks: 2
-            }
-        ];
-        setForecast(mockForecast);
+        const load = async () => {
+            // Forecast placeholder: leave empty unless you connect external API
+            setForecast([]);
 
-        // Mock tasks
-        const mockTasks: ScheduledTask[] = [
-            {
-                id: '1',
-                name: 'Concrete Pour - Foundation',
-                project: 'Downtown Plaza',
-                scheduledDate: new Date(Date.now() + 172800000),
-                weatherDependent: true,
+            if (!supabase) { setTasks([]); return; }
+            const { data } = await supabase
+                .from('tasks')
+                .select('id, title, project:projects(name), schedule_status, weather_sensitive, created_at')
+                .eq('weather_sensitive', true)
+                .order('created_at', { ascending: true })
+                .limit(50);
+            const mapped: ScheduledTask[] = (data || []).map((row: any) => ({
+                id: row.id,
+                name: row.title,
+                project: row.project?.name || 'Project',
+                scheduledDate: new Date(row.created_at),
+                weatherDependent: !!row.weather_sensitive,
                 riskLevel: 'high',
-                alternative: 'Reschedule to Friday'
-            },
-            {
-                id: '2',
-                name: 'Roof Installation',
-                project: 'Riverside Complex',
-                scheduledDate: new Date(Date.now() + 259200000),
-                weatherDependent: true,
-                riskLevel: 'high',
-                alternative: 'Move to next week'
-            }
-        ];
-        setTasks(mockTasks);
+                alternative: row.schedule_status === 'review_pending' ? 'Reschedule pending' : undefined
+            }));
+            setTasks(mapped);
+        };
+        load();
     }, []);
 
     const getWeatherIcon = (condition: string) => {

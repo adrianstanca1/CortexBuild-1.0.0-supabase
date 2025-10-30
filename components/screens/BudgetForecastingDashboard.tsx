@@ -18,6 +18,7 @@ import {
     RefreshCw
 } from 'lucide-react';
 import { User } from '../../types';
+import { supabase } from '../../supabaseClient';
 
 interface BudgetData {
     projectName: string;
@@ -44,38 +45,37 @@ export const BudgetForecastingDashboard: React.FC<BudgetForecastingDashboardProp
     }, [timeframe]);
 
     const loadBudgetData = async () => {
-        // Mock data - in production this would use ML forecasting
-        const mockProjects: BudgetData[] = [
-            {
-                projectName: 'Downtown Plaza',
-                totalBudget: 850000,
-                spent: 680000,
-                committed: 120000,
-                forecasted: 830000,
-                variance: -20000,
-                status: 'on-track'
-            },
-            {
-                projectName: 'Riverside Complex',
-                totalBudget: 1200000,
-                spent: 950000,
-                committed: 300000,
-                forecasted: 1280000,
-                variance: 80000,
-                status: 'over-budget'
-            },
-            {
-                projectName: 'Harbor Development',
-                totalBudget: 650000,
-                spent: 420000,
-                committed: 180000,
-                forecasted: 625000,
-                variance: -25000,
-                status: 'on-track'
-            }
-        ];
-        setProjects(mockProjects);
-        setLoading(false);
+        try {
+            if (!supabase) { setProjects([]); return; }
+
+            // Join budgets with projects for names
+            const { data } = await supabase
+                .from('budgets')
+                .select('total_budget, total_spent, forecast, period, project:projects(name)');
+
+            const mapped: BudgetData[] = (data || []).map((row: any) => {
+                const totalBudget = Number(row.total_budget || 0);
+                const spent = Number(row.total_spent || 0);
+                const committed = 0; // if you track committed separately, add a column and map it here
+                const forecasted = Number(row.forecast || spent);
+                const variance = forecasted - totalBudget;
+                const utilization = totalBudget > 0 ? spent / totalBudget : 0;
+                const status: BudgetData['status'] = variance > 0 ? 'over-budget' : (utilization > 0.85 ? 'at-risk' : 'on-track');
+                return {
+                    projectName: row.project?.name || 'Project',
+                    totalBudget,
+                    spent,
+                    committed,
+                    forecasted,
+                    variance,
+                    status
+                };
+            });
+
+            setProjects(mapped);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const totalBudget = projects.reduce((sum, p) => sum + p.totalBudget, 0);

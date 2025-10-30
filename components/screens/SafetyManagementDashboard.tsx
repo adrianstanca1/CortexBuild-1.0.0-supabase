@@ -3,7 +3,7 @@
  * Comprehensive safety tracking, incident management, and compliance monitoring
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Shield,
     AlertTriangle,
@@ -19,6 +19,7 @@ import {
     Download
 } from 'lucide-react';
 import { User } from '../../types';
+import { supabase } from '../../supabaseClient';
 
 interface SafetyIncident {
     id: string;
@@ -40,28 +41,35 @@ interface SafetyMetric {
 }
 
 export const SafetyManagementDashboard: React.FC<{ currentUser: User; goBack: () => void }> = ({ currentUser, goBack }) => {
-    const [incidents, setIncidents] = useState<SafetyIncident[]>([
-        {
-            id: '1',
-            type: 'near-miss',
-            severity: 'medium',
-            description: 'Worker almost struck by falling tool from scaffold',
-            project: 'Downtown Plaza',
-            date: new Date(Date.now() - 86400000),
-            status: 'investigating',
-            reportedBy: 'John Smith'
-        },
-        {
-            id: '2',
-            type: 'violation',
-            severity: 'high',
-            description: 'Missing safety harness on elevated platform',
-            project: 'Riverside Complex',
-            date: new Date(Date.now() - 172800000),
-            status: 'resolved',
-            reportedBy: 'Sarah Johnson'
-        }
-    ]);
+    const [incidents, setIncidents] = useState<SafetyIncident[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const load = async () => {
+            try {
+                if (!supabase) { setIncidents([]); return; }
+                const { data } = await supabase
+                    .from('incidents')
+                    .select('id, severity, description, occurred_at, resolved, project:projects(name)')
+                    .order('occurred_at', { ascending: false })
+                    .limit(20);
+                const mapped: SafetyIncident[] = (data || []).map((row: any) => ({
+                    id: row.id,
+                    type: 'violation',
+                    severity: row.severity,
+                    description: row.description || '',
+                    project: row.project?.name || 'Project',
+                    date: new Date(row.occurred_at),
+                    status: row.resolved ? 'resolved' : 'open',
+                    reportedBy: ''
+                }));
+                setIncidents(mapped);
+            } finally {
+                setLoading(false);
+            }
+        };
+        load();
+    }, []);
 
     const safetyMetrics: SafetyMetric[] = [
         { label: 'Days Without Incident', value: 127, target: 365, status: 'good', trend: 'up' },
