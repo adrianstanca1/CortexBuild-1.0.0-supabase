@@ -18,6 +18,7 @@ import { useNavigation } from './hooks/useNavigation';
 import { logger } from './utils/logger';
 import { ChatbotWidget } from './components/chat/ChatbotWidget';
 import { supabase } from './supabaseClient';
+import { startAutonomousOps, isAutonomyEnabled } from './utils/autonomy';
 
 // Lazily loaded screens and feature modules
 const UnifiedDashboardScreen = lazy(() => import('./components/screens/UnifiedDashboardScreen'));
@@ -493,6 +494,17 @@ const App: React.FC = () => {
             }
             setAllProjects([]);
         }
+    }, [currentUser]);
+
+    useEffect(() => {
+        // Start/stop autonomous background ops when user or setting changes
+        let stop: (() => void) | null = null;
+        if (currentUser && isAutonomyEnabled()) {
+            stop = startAutonomousOps(currentUser);
+        }
+        return () => {
+            if (stop) stop();
+        };
     }, [currentUser]);
 
     useEffect(() => {
