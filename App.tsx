@@ -700,23 +700,23 @@ const App: React.FC = () => {
                         showSuccess("Navigation", `Opening ${section}...`);
                         // Map section IDs to actual screen navigation
                         if (section === 'user-management') {
-                            navigateToModule('users', {});
+                            navigateToModule('platform-admin', { tab: 'users' });
                         } else if (section === 'company-management') {
-                            navigateToModule('companies', {});
+                            navigateToModule('platform-admin', { tab: 'companies' });
                         } else if (section === 'billing-payments') {
-                            navigateToModule('billing', {});
+                            navigateToModule('advanced-analytics', {});
                         } else if (section === 'analytics-reports') {
-                            navigateToModule('analytics', {});
+                            navigateToModule('analytics-dashboard', {});
                         } else if (section === 'system-settings') {
-                            navigateToModule('settings', {});
+                            navigateToModule('admin-control-panel', {});
                         } else if (section === 'security-audit') {
-                            navigateToModule('security', {});
+                            navigateToModule('platform-admin', { tab: 'security' });
                         } else if (section === 'database-management') {
-                            navigateToModule('database', {});
+                            navigateToModule('admin-control-panel', {});
                         } else if (section === 'activity-monitoring') {
-                            navigateToModule('activity', {});
+                            navigateToModule('analytics-dashboard', {});
                         } else if (section === 'notifications') {
-                            navigateToModule('notifications', {});
+                            navigateToModule('collaboration-hub', {});
                         } else if (section === 'integrations') {
                             navigateToModule('integrations', {});
                         }
