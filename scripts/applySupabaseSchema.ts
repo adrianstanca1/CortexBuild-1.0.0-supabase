@@ -25,10 +25,14 @@ async function applySchema() {
     await client.connect();
 
     const raw = readFileSync(schemaPath, 'utf-8');
+    const sanitized = raw
+        .split(/\r?\n/)
+        .map(line => line.trim().startsWith('--') ? '' : line)
+        .join('\n');
 
     // Simple split on semicolon; keep inside transaction so partial failures roll back
-    const statements = raw
-        .split(/;\s*$/m)
+    const statements = sanitized
+        .split(/;\s*(?:\r?\n|$)/)
         .map(stmt => stmt.trim())
         .filter(stmt => stmt.length > 0 && !stmt.startsWith('--'));
 
@@ -42,6 +46,7 @@ async function applySchema() {
                 console.log(`✅ Statement ${i + 1}/${statements.length}`);
             } catch (error: any) {
                 console.error(`❌ Statement ${i + 1} failed:`, error.message);
+                console.error('Statement SQL:', statement);
                 throw error;
             }
         }
