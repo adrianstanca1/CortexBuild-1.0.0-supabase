@@ -1,5 +1,5 @@
-# Ignore API directory - these are Express routes, not Vercel serverless functions
-api/
+# Note: api/ directory is now needed for frontend imports
+# Keep server/ directory ignored as it's backend code
 
 # Ignore server directory
 server/

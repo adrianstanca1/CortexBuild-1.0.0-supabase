@@ -79,8 +79,7 @@ const Base44Clone = lazy(() =>
 const PlatformAdminScreen = lazy(() => import('./components/screens/admin/PlatformAdminScreen'));
 const SuperAdminDashboardScreen = lazy(() => import('./components/screens/admin/SuperAdminDashboardScreen'));
 const AdminControlPanel = lazy(() => import('./components/admin/AdminControlPanel'));
-const SuperAdminDashboardV2 = lazy(() => import('./components/admin/SuperAdminDashboardV2')); // V2 - Most Advanced
-const EnhancedSuperAdminDashboard = lazy(() => import('./components/admin/EnhancedSuperAdminDashboard'));
+const EnhancedSuperAdminDashboard = lazy(() => import('./components/admin/EnhancedSuperAdminDashboard')); // V2 - Most Advanced
 const AdvancedMLDashboard = lazy(() => import('./components/screens/dashboards/AdvancedMLDashboard'));
 const AnalyticsDashboardScreen = lazy(() => import('./components/screens/AnalyticsDashboardScreen'));
 const AdvancedSearchScreen = lazy(() => import('./components/screens/AdvancedSearchScreen'));
@@ -161,7 +160,7 @@ const SCREEN_COMPONENTS: Record<Screen, React.ComponentType<any>> = {
     'developer-workspace': DeveloperWorkspaceScreen,
     'developer-console': EnhancedDeveloperConsole,
     // Ensure super-admin points to a concrete component
-    'super-admin-dashboard': SuperAdminDashboardV2,
+    'super-admin-dashboard': EnhancedSuperAdminDashboard,
     'sdk-developer': ProductionSDKDeveloperView,
     'my-apps-desktop': Base44Clone,
     // Global Marketplace
@@ -637,7 +636,7 @@ const App: React.FC = () => {
             console.log('🎯 SUPER ADMIN ROLE DETECTED - Rendering Super Admin Dashboard V2');
             return (
                 <Suspense fallback={<ScreenLoader />}>
-                    <SuperAdminDashboardV2
+                    <EnhancedSuperAdminDashboard
                         isDarkMode={true}
                         onNavigate={(section) => {
                             console.log('Navigating to section:', section);
@@ -672,7 +671,7 @@ const App: React.FC = () => {
     if (screen === 'super-admin-dashboard') {
         return (
             <Suspense fallback={<ScreenLoader />}>
-                <SuperAdminDashboardV2
+                <EnhancedSuperAdminDashboard
                     isDarkMode={true}
                     onNavigate={(section) => {
                         console.log('Navigating to section:', section);

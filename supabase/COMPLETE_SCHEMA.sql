@@ -31,11 +31,11 @@ CREATE TABLE IF NOT EXISTS companies (
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS users (
-    id TEXT PRIMARY KEY DEFAULT ('user-' || gen_random_uuid()::text),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     email TEXT UNIQUE NOT NULL,
-    password_hash TEXT NOT NULL,
-    name TEXT NOT NULL,
-    role TEXT NOT NULL DEFAULT 'operative',
+    password_hash TEXT,
+    name TEXT,
+    role TEXT DEFAULT 'company_admin',
     company_id TEXT REFERENCES companies(id) ON DELETE CASCADE,
     phone TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -68,6 +68,13 @@ CREATE TABLE IF NOT EXISTS projects (
 CREATE INDEX IF NOT EXISTS idx_projects_company_id ON projects(company_id);
 CREATE INDEX IF NOT EXISTS idx_projects_status ON projects(status);
 
+-- Ensure legacy tables include required columns
+ALTER TABLE companies ADD COLUMN IF NOT EXISTS industry TEXT;
+ALTER TABLE companies ADD COLUMN IF NOT EXISTS email TEXT;
+ALTER TABLE companies ADD COLUMN IF NOT EXISTS max_users INTEGER DEFAULT 10;
+ALTER TABLE companies ADD COLUMN IF NOT EXISTS max_projects INTEGER DEFAULT 5;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS phone TEXT;
+
 -- ============================================================================
 -- MARKETPLACE APPS (6 Pre-approved Apps)
 -- ============================================================================
@@ -79,7 +86,7 @@ CREATE TABLE IF NOT EXISTS sdk_apps (
     icon TEXT,
     category TEXT,
     version TEXT DEFAULT '1.0.0',
-    developer_id TEXT REFERENCES users(id),
+    developer_id UUID REFERENCES users(id),
     is_public BOOLEAN DEFAULT false,
     review_status TEXT DEFAULT 'pending',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -96,7 +103,7 @@ CREATE INDEX IF NOT EXISTS idx_sdk_apps_review_status ON sdk_apps(review_status)
 
 CREATE TABLE IF NOT EXISTS user_app_installations (
     id TEXT PRIMARY KEY DEFAULT ('install-' || gen_random_uuid()::text),
-    user_id TEXT REFERENCES users(id) ON DELETE CASCADE,
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
     app_id TEXT REFERENCES sdk_apps(id) ON DELETE CASCADE,
     installed_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     UNIQUE(user_id, app_id)
@@ -127,7 +134,7 @@ CREATE INDEX IF NOT EXISTS idx_company_app_installations_app_id ON company_app_i
 CREATE TABLE IF NOT EXISTS app_review_history (
     id TEXT PRIMARY KEY DEFAULT ('review-' || gen_random_uuid()::text),
     app_id TEXT REFERENCES sdk_apps(id) ON DELETE CASCADE,
-    reviewer_id TEXT REFERENCES users(id),
+    reviewer_id UUID REFERENCES users(id),
     status TEXT NOT NULL,
     comments TEXT,
     reviewed_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -142,7 +149,7 @@ CREATE INDEX IF NOT EXISTS idx_app_review_history_app_id ON app_review_history(a
 CREATE TABLE IF NOT EXISTS app_analytics (
     id TEXT PRIMARY KEY DEFAULT ('analytics-' || gen_random_uuid()::text),
     app_id TEXT REFERENCES sdk_apps(id) ON DELETE CASCADE,
-    user_id TEXT REFERENCES users(id),
+    user_id UUID REFERENCES users(id),
     event_type TEXT NOT NULL,
     event_data JSONB,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -157,7 +164,7 @@ CREATE INDEX IF NOT EXISTS idx_app_analytics_created_at ON app_analytics(created
 
 CREATE TABLE IF NOT EXISTS activities (
     id TEXT PRIMARY KEY DEFAULT ('activity-' || gen_random_uuid()::text),
-    user_id TEXT REFERENCES users(id),
+    user_id UUID REFERENCES users(id),
     company_id TEXT REFERENCES companies(id),
     action TEXT NOT NULL,
     entity_type TEXT,
@@ -189,13 +196,7 @@ ON CONFLICT (id) DO NOTHING;
 -- Super Admin: parola123
 -- Company Admin: lolozania1
 -- Developer: password123
-
-    phone TEXT,
-INSERT INTO users (id, email, password_hash, name, role, company_id, phone) VALUES
-    ('user-1', 'adrian.stanca1@gmail.com', '$2a$10$YourHashedPasswordHere1', 'Adrian Stanca', 'super_admin', 'company-1', NULL),
-    ('user-2', 'adrian@ascladdingltd.co.uk', '$2a$10$YourHashedPasswordHere2', 'Adrian ASC', 'company_admin', 'company-2', '+447700000001'),
-    ('user-3', 'adrian.stanca1@icloud.com', '$2a$10$YourHashedPasswordHere3', 'Adrian Dev', 'developer', 'company-1', NULL)
-ON CONFLICT (email) DO NOTHING;
+-- Seed Supabase auth users via scripts/createSupabaseUsers.ts to ensure IDs align with auth.users
 
 -- ============================================================================
 -- SEED DATA - 6 Marketplace Apps (Pre-approved)
@@ -224,22 +225,25 @@ ALTER TABLE activities ENABLE ROW LEVEL SECURITY;
 -- ============================================================================
 
 -- Users can only see users from their company
+DROP POLICY IF EXISTS users_company_isolation ON users;
 CREATE POLICY users_company_isolation ON users
     FOR ALL
     USING (company_id = current_setting('app.current_company_id', true)::text);
 
 -- Super admins can see all users
+DROP POLICY IF EXISTS users_super_admin_access ON users;
 CREATE POLICY users_super_admin_access ON users
     FOR ALL
     USING (
         EXISTS (
             SELECT 1 FROM users 
-            WHERE id = current_setting('app.current_user_id', true)::text
+            WHERE id = current_setting('app.current_user_id', true)::uuid
             AND role = 'super_admin'
         )
     );
 
 -- Projects are isolated by company
+DROP POLICY IF EXISTS projects_company_isolation ON projects;
 CREATE POLICY projects_company_isolation ON projects
     FOR ALL
     USING (company_id = current_setting('app.current_company_id', true)::text);
@@ -253,4 +257,3 @@ CREATE POLICY projects_company_isolation ON projects
 -- 1. Update password hashes with real bcrypt hashes
 -- 2. Configure Supabase environment variables
 -- 3. Test authentication and RLS policies
-
