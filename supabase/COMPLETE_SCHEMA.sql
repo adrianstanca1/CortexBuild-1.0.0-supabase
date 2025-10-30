@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS sdk_apps (
     icon TEXT,
     category TEXT,
     version TEXT DEFAULT '1.0.0',
-    developer_id TEXT REFERENCES users(id),
+    developer_id UUID REFERENCES users(id),
     is_public BOOLEAN DEFAULT false,
     review_status TEXT DEFAULT 'pending',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -96,7 +96,7 @@ CREATE INDEX IF NOT EXISTS idx_sdk_apps_review_status ON sdk_apps(review_status)
 
 CREATE TABLE IF NOT EXISTS user_app_installations (
     id TEXT PRIMARY KEY DEFAULT ('install-' || gen_random_uuid()::text),
-    user_id TEXT REFERENCES users(id) ON DELETE CASCADE,
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
     app_id TEXT REFERENCES sdk_apps(id) ON DELETE CASCADE,
     installed_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     UNIQUE(user_id, app_id)
@@ -253,4 +253,3 @@ CREATE POLICY projects_company_isolation ON projects
 -- 1. Update password hashes with real bcrypt hashes
 -- 2. Configure Supabase environment variables
 -- 3. Test authentication and RLS policies
-
