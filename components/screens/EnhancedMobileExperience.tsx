@@ -246,7 +246,7 @@ const EnhancedMobileExperience: React.FC<EnhancedMobileExperienceProps> = ({
             'busy': 'bg-red-500',
             'active': 'bg-green-500',
             'planning': 'bg-blue-500',
-            'completed': 'bg-gray-500'
+            'done': 'bg-gray-500'
         };
         return colors[status as keyof typeof colors] || 'bg-gray-500';
     };

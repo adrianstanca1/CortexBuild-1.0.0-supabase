@@ -13,12 +13,13 @@ export default defineConfig(({ mode }) => {
         hmr: {
           port: 3000,
         },
-        proxy: {
-          '/api': {
-            target: apiUrl,
-            changeOrigin: true,
-          }
-        }
+        // Proxy disabled - app uses Supabase directly
+        // proxy: {
+        //   '/api': {
+        //     target: apiUrl,
+        //     changeOrigin: true,
+        //   }
+        // }
       },
       plugins: [react()],
       define: {

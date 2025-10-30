@@ -63,8 +63,13 @@ export const EnhancedDashboard: React.FC = () => {
       const user = await authService.getCurrentUser();
       setCurrentUser(user);
 
-      // Load health status
-      const health = await authService.getHealthStatus();
+      // Load health status (mock for now)
+      const health = {
+        database: 'healthy',
+        api: 'healthy',
+        storage: 'healthy',
+        realtime: { users: 10, sessions: 15, companies: 5 }
+      };
       setHealthStatus(health);
 
       setLoading(false);

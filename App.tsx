@@ -40,11 +40,11 @@ const ProductionSDKDeveloperView = lazy(() =>
 const DeveloperWorkspaceScreen = lazy(() => import('./components/screens/developer/DeveloperWorkspaceScreen'));
 const EnhancedDeveloperConsole = lazy(() => import('./components/screens/developer/EnhancedDeveloperConsole'));
 const ModernDeveloperDashboard = lazy(() => import('./components/screens/developer/ModernDeveloperDashboard'));
-const DeveloperDashboardV2 = lazy(() => import('./components/screens/developer/DeveloperDashboardV2'));
+const DeveloperDashboardV2 = lazy(() => import('./components/screens/developer/DeveloperDashboardV2')); // V2 - Most Advanced
 const ConstructionAutomationStudio = lazy(() => import('./components/screens/developer/ConstructionAutomationStudio'));
 const CompanyAdminDashboardScreen = lazy(() => import('./components/screens/company/CompanyAdminDashboardScreen'));
 const CompanyAdminDashboard = lazy(() => import('./components/screens/company/CompanyAdminDashboard'));
-const CompanyAdminDashboardV2 = lazy(() => import('./components/screens/company/CompanyAdminDashboardV2'));
+const CompanyAdminDashboardV2 = lazy(() => import('./components/screens/company/CompanyAdminDashboardV2')); // V2 - Most Advanced
 const PunchListScreen = lazy(() => import('./components/screens/PunchListScreen'));
 const PunchListItemDetailScreen = lazy(() => import('./components/screens/PunchListItemDetailScreen'));
 const NewPunchListItemScreen = lazy(() => import('./components/screens/NewPunchListItemScreen'));
@@ -78,7 +78,8 @@ const Base44Clone = lazy(() =>
 const PlatformAdminScreen = lazy(() => import('./components/screens/admin/PlatformAdminScreen'));
 const SuperAdminDashboardScreen = lazy(() => import('./components/screens/admin/SuperAdminDashboardScreen'));
 const AdminControlPanel = lazy(() => import('./components/admin/AdminControlPanel'));
-const SuperAdminDashboardV2 = lazy(() => import('./components/admin/SuperAdminDashboardV2'));
+const SuperAdminDashboardV2 = lazy(() => import('./components/admin/SuperAdminDashboardV2')); // V2 - Most Advanced
+const EnhancedSuperAdminDashboard = lazy(() => import('./components/admin/EnhancedSuperAdminDashboard'));
 const AdvancedMLDashboard = lazy(() => import('./components/screens/dashboards/AdvancedMLDashboard'));
 const AnalyticsDashboardScreen = lazy(() => import('./components/screens/AnalyticsDashboardScreen'));
 const AdvancedSearchScreen = lazy(() => import('./components/screens/AdvancedSearchScreen'));
@@ -112,8 +113,8 @@ type NavigationItem = {
 
 const SCREEN_COMPONENTS: Record<Screen, React.ComponentType<any>> = {
     'global-dashboard': UnifiedDashboardScreen,
-    'company-admin-dashboard': CompanyAdminDashboard,
-    'company-admin-legacy': CompanyAdminDashboardScreen,
+    'company-admin-dashboard': CompanyAdminDashboardV2, // V2 - Most Advanced
+    'company-admin-legacy': CompanyAdminDashboard,
     'projects': ProjectsListScreen,
     'project-home': ProjectHomeScreen,
     'my-day': MyDayScreen,
@@ -274,7 +275,7 @@ const App: React.FC = () => {
 
     const handleUserSignIn = async (user: any) => {
         try {
-            logger.info('Processing OAuth callback', { hashLength: hash.length });
+            logger.info('Processing user sign in', { userId: user.id, email: user.email });
 
             // Try to fetch from users table first (our main table)
             let profile = null;

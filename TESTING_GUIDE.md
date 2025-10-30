@@ -1,354 +1,441 @@
-# 🧪 Super Admin Dashboard - Complete Testing Guide
+# 🧪 CortexBuild Testing Guide
 
-## 🎯 **OVERVIEW**
-
-This guide will help you test all the newly implemented features in the Super Admin Dashboard.
+**Last Updated**: October 29, 2025  
+**Version**: 1.0.0
 
 ---
 
-## 🚀 **PREREQUISITES**
+## 📋 Table of Contents
 
-### **1. Servers Running:**
+1. [Quick Start](#quick-start)
+2. [Testing the Application](#testing-the-application)
+3. [Feature Testing Checklist](#feature-testing-checklist)
+4. [Real-time Features Testing](#real-time-features-testing)
+5. [Performance Testing](#performance-testing)
+6. [Browser Compatibility](#browser-compatibility)
+7. [Mobile Testing](#mobile-testing)
+8. [Common Issues](#common-issues)
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Node.js 18+ installed
+- Supabase account with active project
+- Modern web browser (Chrome, Firefox, Safari, Edge)
+
+### Local Testing Setup
 
 ```bash
-# Terminal 1 - Frontend
+# 1. Navigate to project directory
+cd /Users/admin/Desktop/proiecte\ web/CortexBuild-1.0.0-supabase
+
+# 2. Install dependencies (if not already done)
+npm install
+
+# 3. Start development server
 npm run dev
 
-# Terminal 2 - Backend
-npm run server
+# 4. Open in browser
+# Navigate to http://localhost:5173
 ```
 
-### **2. Clear Browser Data:**
+---
 
+## 🧪 Testing the Application
+
+### 1. Authentication Testing
+
+#### Login Flow
+- [ ] Navigate to the landing page
+- [ ] Click on "Login" button
+- [ ] Test with valid credentials
+- [ ] Test with invalid credentials
+- [ ] Check error messages display correctly
+- [ ] Verify redirect to appropriate dashboard after login
+
+#### OAuth Testing
+- [ ] Test Google OAuth login
+- [ ] Test GitHub OAuth login
+- [ ] Verify profile information is fetched correctly
+- [ ] Check avatar display
+
+#### Role-Based Access
+- [ ] Login as **Super Admin** (adrian.stanca1@gmail.com)
+  - Verify access to Super Admin Dashboard
+  - Check all admin features are visible
+- [ ] Login as **Company Admin**
+  - Verify access to Company Admin Dashboard
+  - Check company management features
+- [ ] Login as **Developer**
+  - Verify access to Developer Console
+  - Check developer tools and SDK features
+
+---
+
+### 2. Dashboard Testing
+
+#### Super Admin Dashboard
+```
+Login: adrian.stanca1@gmail.com
+Password: (your super admin password)
+```
+
+Features to test:
+- [ ] Platform statistics display correctly
+- [ ] Company management panel works
+- [ ] User management features functional
+- [ ] System health metrics updating
+- [ ] Activity logs showing recent actions
+- [ ] Analytics charts rendering properly
+
+#### Company Admin Dashboard
+Features to test:
+- [ ] Project overview displays
+- [ ] Team member stats visible
+- [ ] Recent activity feed updating
+- [ ] Quick action buttons work
+- [ ] Navigation to different modules
+- [ ] Performance metrics accurate
+
+#### Developer Dashboard
+Features to test:
+- [ ] API documentation accessible
+- [ ] SDK tools available
+- [ ] Workflow builder functional
+- [ ] Code sandbox working
+- [ ] Analytics dashboard displays
+- [ ] Integration hub accessible
+
+---
+
+### 3. Core Features Testing
+
+#### Projects Module
+- [ ] Create new project
+  - Fill in all required fields
+  - Upload project image
+  - Set project dates
+  - Assign team members
+- [ ] Edit existing project
+- [ ] Delete project (check confirmation)
+- [ ] View project details
+- [ ] Filter projects by status
+- [ ] Search projects by name
+
+#### Tasks Management
+- [ ] Create new task
+  - Set task title and description
+  - Assign to team member
+  - Set due date
+  - Mark as billable
+  - Add tags/labels
+- [ ] Edit task details
+- [ ] Mark task as complete
+- [ ] Delete task
+- [ ] Filter tasks by:
+  - Status (pending, in progress, completed)
+  - Assignee
+  - Due date
+  - Priority
+- [ ] Search tasks
+
+#### RFIs (Requests for Information)
+- [ ] Create new RFI
+  - Add subject and description
+  - Select assignee
+  - Set due date
+  - Attach files (if applicable)
+- [ ] View RFI details
+- [ ] Respond to RFI
+- [ ] Close RFI
+- [ ] Filter RFIs by status
+- [ ] Check overdue RFI highlighting
+
+#### Documents
+- [ ] Upload document
+  - Test different file types (PDF, DOC, XLS, IMG)
+  - Test file size limits
+  - Check progress indicator
+- [ ] View document
+- [ ] Download document
+- [ ] Delete document
+- [ ] Search documents
+- [ ] Filter by document type
+
+---
+
+### 4. Advanced Features Testing
+
+#### Time Tracking
+- [ ] Start timer
+  - Select task and project
+  - Add notes
+  - Mark as billable
+- [ ] Pause/Resume timer
+- [ ] Stop timer and save entry
+- [ ] View time entries
+- [ ] Filter time entries by date
+- [ ] Generate time reports
+- [ ] Export time tracking data
+
+#### Notifications
+- [ ] Receive real-time notifications
+- [ ] Mark notification as read
+- [ ] Delete notification
+- [ ] Filter notifications by:
+  - Read/Unread
+  - Type
+  - Priority
+  - Category
+- [ ] Search notifications
+- [ ] Bulk actions (mark all as read, delete)
+
+#### File Upload
+- [ ] Drag and drop files
+- [ ] Click to select files
+- [ ] Upload multiple files
+- [ ] View upload progress
+- [ ] Handle upload errors
+- [ ] Preview uploaded files
+- [ ] Remove files from queue
+
+#### Calendar View
+- [ ] Navigate between months
+- [ ] Click on date to view events
+- [ ] View different event types
+- [ ] Filter by event type
+- [ ] Create new event
+- [ ] Edit existing event
+- [ ] Delete event
+
+---
+
+## 🔄 Real-time Features Testing
+
+### WebSocket Connection
+```bash
+# Check browser console for WebSocket status
+# Should see: "✅ WebSocket connected"
+```
+
+### Real-time Updates Testing
+
+1. **Notifications**
+   - Open two browser windows with different users
+   - Create action in one window
+   - Verify notification appears in other window
+
+2. **Live Activity Feed**
+   - Perform actions (create task, upload file)
+   - Check activity feed updates in real-time
+   - Verify "Live" indicator is active
+
+3. **Presence Tracking**
+   - Open project in multiple windows
+   - Check online users indicator
+   - Verify user presence updates
+
+---
+
+## ⚡ Performance Testing
+
+### Load Time Testing
+- [ ] Initial page load < 3 seconds
+- [ ] Dashboard renders < 2 seconds
+- [ ] API requests complete < 1 second
+- [ ] File uploads show progress smoothly
+- [ ] Real-time updates < 500ms latency
+
+### Stress Testing
+- [ ] Upload 10+ files simultaneously
+- [ ] Create 50+ tasks rapidly
+- [ ] Load project with 100+ documents
+- [ ] Handle 1000+ notifications
+- [ ] Navigate rapidly between screens
+
+### Memory Testing
+```bash
+# Open Chrome DevTools
+# Performance > Memory > Take heap snapshot
+# Check for memory leaks after navigation
+```
+
+---
+
+## 🌐 Browser Compatibility
+
+### Desktop Browsers
+- [ ] Chrome (latest 2 versions)
+- [ ] Firefox (latest 2 versions)
+- [ ] Safari (latest 2 versions)
+- [ ] Edge (latest 2 versions)
+
+### Mobile Browsers
+- [ ] Chrome Mobile (Android)
+- [ ] Safari Mobile (iOS)
+- [ ] Firefox Mobile
+- [ ] Samsung Internet
+
+### Testing Checklist Per Browser
+- [ ] Login/Logout
+- [ ] Navigation
+- [ ] Forms submission
+- [ ] File upload
+- [ ] Notifications display
+- [ ] Charts rendering
+- [ ] Responsive layout
+
+---
+
+## 📱 Mobile Testing
+
+### Responsive Design
+```bash
+# Test at different viewport sizes:
+# - Mobile: 375x667 (iPhone SE)
+# - Tablet: 768x1024 (iPad)
+# - Desktop: 1920x1080
+```
+
+### Mobile Features
+- [ ] Touch gestures work properly
+- [ ] Buttons are easily tappable
+- [ ] Forms are mobile-friendly
+- [ ] Navigation menu accessible
+- [ ] File upload from camera
+- [ ] GPS location tracking
+- [ ] Push notifications
+- [ ] Offline mode
+
+### PWA Features
+- [ ] Install as app
+- [ ] Offline functionality
+- [ ] App icon displays
+- [ ] Splash screen shows
+- [ ] Service worker active
+
+---
+
+## 🐛 Common Issues
+
+### Issue: Blank screen after login
+**Solution:**
+- Check browser console for errors
+- Verify Supabase credentials
+- Clear browser cache
+- Check network tab for failed requests
+
+### Issue: Real-time updates not working
+**Solution:**
+- Verify WebSocket connection in console
+- Check Supabase Realtime is enabled
+- Confirm Row Level Security policies
+- Test network connectivity
+
+### Issue: File upload fails
+**Solution:**
+- Check file size limits
+- Verify file type is allowed
+- Check Supabase storage bucket exists
+- Review storage policies
+
+### Issue: Slow performance
+**Solution:**
+- Check Network tab for slow requests
+- Verify API endpoint responses
+- Clear browser cache
+- Check database query performance
+
+---
+
+## 🔍 Debug Mode
+
+### Enable Debug Logging
 ```javascript
-// Open browser console (F12) and run:
-localStorage.clear();
-sessionStorage.clear();
-location.reload();
+// Add to browser console
+localStorage.setItem('DEBUG', 'true');
 ```
 
-### **3. Login:**
+### View Network Requests
+```bash
+# Chrome DevTools
+# Network tab > Filter by:
+# - API calls
+# - WebSocket
+# - Media uploads
+```
 
-- URL: <http://localhost:3000>
-- Email: `adrian.stanca1@gmail.com`
-- Password: `password123`
-- Role: `super_admin`
-
----
-
-## ✅ **TEST CHECKLIST**
-
-### **PHASE 1: Quick Actions**
-
-#### **Test 1.1: Add User**
-
-- [ ] Click "Add User" button in Quick Actions
-- [ ] Modal opens with form
-- [ ] Fill in all fields:
-  - Name: "Test User"
-  - Email: "<test@example.com>"
-  - Password: "password123"
-  - Role: Select "User"
-  - Company: Select any company
-- [ ] Click "Create User"
-- [ ] Success: Modal closes
-- [ ] Success: Dashboard stats refresh
-- [ ] Navigate to "Users" tab
-- [ ] Verify: New user appears in list
-
-#### **Test 1.2: Add Company**
-
-- [ ] Click "Add Company" button in Quick Actions
-- [ ] Modal opens with form
-- [ ] Fill in all fields:
-  - Company Name: "Test Construction Co."
-  - Email: "<info@testco.com>"
-  - Phone: "+1 (555) 123-4567"
-  - Address: "123 Main St, City, State 12345"
-  - Website: "<https://www.testco.com>"
-  - Industry: Select "Construction"
-- [ ] Click "Create Company"
-- [ ] Success: Modal closes
-- [ ] Success: Dashboard stats refresh
-- [ ] Navigate to "Companies" tab
-- [ ] Verify: New company appears in grid
-
-#### **Test 1.3: New Project**
-
-- [ ] Click "New Project" button in Quick Actions
-- [ ] Modal opens with form
-- [ ] Fill in all fields:
-  - Project Name: "Downtown Office Complex"
-  - Company: Select any company
-  - Description: "New office building project"
-  - Budget: "500000"
-  - Status: Select "Planning"
-  - Start Date: Select today's date
-  - End Date: Select future date
-  - Location: "456 Business Ave"
-- [ ] Click "Create Project"
-- [ ] Success: Modal closes
-- [ ] Success: Dashboard stats refresh
-
-#### **Test 1.4: SDK Access**
-
-- [ ] Click "SDK Access" button
-- [ ] Verify: Navigates to "SDK Platform" tab
-- [ ] Verify: Tab content displays
-
-#### **Test 1.5: Security**
-
-- [ ] Click "Security" button
-- [ ] Verify: Alert shows "Security settings coming soon!"
-
-#### **Test 1.6: Settings**
-
-- [ ] Click "Settings" button
-- [ ] Verify: Navigates to "System" tab
-- [ ] Verify: Tab content displays
+### Check Real-time Subscriptions
+```javascript
+// Browser console
+window.supabaseClient.getChannels();
+```
 
 ---
 
-### **PHASE 2: Navigation Tabs**
+## ✅ Testing Checklist Summary
 
-#### **Test 2.1: Overview Tab**
+### Before Deployment
+- [ ] All authentication flows tested
+- [ ] All CRUD operations verified
+- [ ] Real-time features working
+- [ ] File uploads functional
+- [ ] Notifications delivering
+- [ ] Analytics displaying correctly
+- [ ] Mobile responsive
+- [ ] PWA features working
+- [ ] No console errors
+- [ ] No broken links
+- [ ] All forms validated
+- [ ] Error messages clear
 
-- [ ] Click "Overview" tab
-- [ ] Verify: 4 stat cards display (Users, Companies, Projects, Revenue)
-- [ ] Verify: SDK Platform section shows
-- [ ] Verify: System Health section shows
-- [ ] Verify: Quick Actions panel shows
-- [ ] Click "Refresh" button
-- [ ] Verify: Data refreshes (spinner shows)
-
-#### **Test 2.2: Users Tab**
-
-- [ ] Click "Users" tab
-- [ ] Verify: User management interface loads
-- [ ] Verify: Statistics cards show (Total, Super Admins, Company Admins, Regular Users)
-- [ ] Verify: Users table displays with data
-- [ ] Test search:
-  - [ ] Type in search box
-  - [ ] Verify: Table filters in real-time
-- [ ] Test role filter:
-  - [ ] Select "Super Admin" from dropdown
-  - [ ] Verify: Only super admins show
-  - [ ] Select "All Roles"
-  - [ ] Verify: All users show again
-- [ ] Click "Add User" button
-  - [ ] Verify: Modal opens
-  - [ ] Close modal
-- [ ] Click edit icon on a user
-  - [ ] Verify: Alert shows "Edit user coming soon!"
-- [ ] Click delete icon on a user (NOT super_admin)
-  - [ ] Verify: Confirmation dialog shows
-  - [ ] Click "Cancel"
-  - [ ] Verify: User not deleted
-  - [ ] Click delete again
-  - [ ] Click "OK"
-  - [ ] Verify: User deleted from list
-  - [ ] Verify: Stats update
-
-#### **Test 2.3: Companies Tab**
-
-- [ ] Click "Companies" tab
-- [ ] Verify: Company management interface loads
-- [ ] Verify: Statistics cards show (Total, Construction, Real Estate, Architecture)
-- [ ] Verify: Companies grid displays with cards
-- [ ] Test search:
-  - [ ] Type in search box
-  - [ ] Verify: Grid filters in real-time
-- [ ] Test industry filter:
-  - [ ] Select "Construction" from dropdown
-  - [ ] Verify: Only construction companies show
-  - [ ] Select "All Industries"
-  - [ ] Verify: All companies show again
-- [ ] Click "Add Company" button
-  - [ ] Verify: Modal opens
-  - [ ] Close modal
-- [ ] Hover over company card
-  - [ ] Verify: Shadow increases (hover effect)
-- [ ] Click edit icon on a company
-  - [ ] Verify: Alert shows "Edit company coming soon!"
-- [ ] Click delete icon on a company (one without users)
-  - [ ] Verify: Confirmation dialog shows
-  - [ ] Click "OK"
-  - [ ] Verify: Company deleted from grid
-  - [ ] Verify: Stats update
-- [ ] Try to delete company with users
-  - [ ] Verify: Error message shows about users
-
-#### **Test 2.4: SDK Platform Tab**
-
-- [ ] Click "SDK Platform" tab
-- [ ] Verify: Placeholder content shows
-- [ ] Verify: Message says "SDK management interface coming soon..."
-
-#### **Test 2.5: System Tab**
-
-- [ ] Click "System" tab
-- [ ] Verify: Placeholder content shows
-- [ ] Verify: Message says "Advanced system monitoring coming soon..."
+### Performance Targets
+- [ ] Lighthouse score > 90
+- [ ] First Contentful Paint < 1.5s
+- [ ] Time to Interactive < 3.5s
+- [ ] Core Web Vitals passing
+- [ ] No memory leaks
 
 ---
 
-### **PHASE 3: Form Validation**
+## 📊 Test Results Template
 
-#### **Test 3.1: Add User Form Validation**
+```markdown
+### Test Session: [Date]
+**Tester**: [Name]
+**Browser**: [Browser/Version]
+**Device**: [Desktop/Mobile]
 
-- [ ] Open Add User modal
-- [ ] Try to submit empty form
-  - [ ] Verify: Browser validation prevents submit
-- [ ] Fill only name
-  - [ ] Verify: Cannot submit (email required)
-- [ ] Fill name and email
-  - [ ] Verify: Cannot submit (password required)
-- [ ] Enter password less than 6 characters
-  - [ ] Verify: Validation message shows
-- [ ] Enter invalid email format
-  - [ ] Verify: Validation message shows
-- [ ] Fill all fields correctly
-  - [ ] Verify: Form submits successfully
+#### Results:
+- ✅ Authentication: PASS
+- ✅ Dashboard: PASS
+- ✅ Projects: PASS
+- ✅ Tasks: PASS
+- ❌ Notifications: FAIL - Issue with real-time updates
+- ✅ File Upload: PASS
 
-#### **Test 3.2: Add Company Form Validation**
+#### Issues Found:
+1. [Description]
+   - Severity: High/Medium/Low
+   - Steps to reproduce
+   - Expected vs Actual behavior
 
-- [ ] Open Add Company modal
-- [ ] Try to submit empty form
-  - [ ] Verify: Browser validation prevents submit
-- [ ] Fill only name
-  - [ ] Verify: Cannot submit (email required)
-- [ ] Enter invalid email
-  - [ ] Verify: Validation message shows
-- [ ] Enter invalid website URL
-  - [ ] Verify: Validation message shows
-- [ ] Fill all required fields correctly
-  - [ ] Verify: Form submits successfully
-
-#### **Test 3.3: Add Project Form Validation**
-
-- [ ] Open Add Project modal
-- [ ] Try to submit empty form
-  - [ ] Verify: Browser validation prevents submit
-- [ ] Fill only name
-  - [ ] Verify: Cannot submit (company required)
-- [ ] Enter negative budget
-  - [ ] Verify: Validation prevents or shows error
-- [ ] Enter end date before start date
-  - [ ] Verify: Logical validation (if implemented)
-- [ ] Fill all required fields correctly
-  - [ ] Verify: Form submits successfully
+#### Notes:
+[Additional observations]
+```
 
 ---
 
-### **PHASE 4: Error Handling**
+## 📞 Support
 
-#### **Test 4.1: Duplicate User**
-
-- [ ] Try to create user with existing email
-- [ ] Verify: Error message shows "User already exists"
-- [ ] Verify: Modal stays open
-- [ ] Verify: Form data preserved
-
-#### **Test 4.2: Network Errors**
-
-- [ ] Stop backend server
-- [ ] Try to create user
-- [ ] Verify: Error message shows
-- [ ] Verify: Loading state ends
-- [ ] Restart backend server
-
-#### **Test 4.3: Unauthorized Access**
-
-- [ ] Logout
-- [ ] Try to access /api/admin/users directly
-- [ ] Verify: 401 Unauthorized response
+For testing issues or questions:
+- Check documentation: `/docs`
+- Review implementation plans
+- Contact development team
 
 ---
 
-### **PHASE 5: Data Persistence**
-
-#### **Test 5.1: Page Refresh**
-
-- [ ] Create a new user
-- [ ] Refresh browser (F5)
-- [ ] Login again
-- [ ] Navigate to Users tab
-- [ ] Verify: New user still exists
-
-#### **Test 5.2: Cross-Tab Updates**
-
-- [ ] Create a new company
-- [ ] Navigate to Users tab
-- [ ] Create a new user
-- [ ] Select the newly created company
-- [ ] Verify: Company appears in dropdown
-
----
-
-### **PHASE 6: UI/UX**
-
-#### **Test 6.1: Responsive Design**
-
-- [ ] Resize browser window to mobile size
-- [ ] Verify: Layout adapts
-- [ ] Verify: Modals are scrollable
-- [ ] Verify: Tables are scrollable horizontally
-
-#### **Test 6.2: Loading States**
-
-- [ ] Click Refresh button
-- [ ] Verify: Spinner shows
-- [ ] Verify: Button is disabled during refresh
-- [ ] Create a user
-- [ ] Verify: "Creating..." text shows on button
-- [ ] Verify: Button is disabled during creation
-
-#### **Test 6.3: Visual Feedback**
-
-- [ ] Hover over buttons
-  - [ ] Verify: Color changes
-- [ ] Hover over table rows
-  - [ ] Verify: Background changes
-- [ ] Hover over company cards
-  - [ ] Verify: Shadow increases
-- [ ] Click modal close button
-  - [ ] Verify: Modal closes smoothly
-
----
-
-## 🎯 **SUCCESS CRITERIA**
-
-All tests should pass with:
-
-- ✅ No console errors
-- ✅ Smooth animations
-- ✅ Fast response times
-- ✅ Clear user feedback
-- ✅ Data persistence
-- ✅ Proper error handling
-
----
-
-## 🐛 **KNOWN ISSUES / LIMITATIONS**
-
-1. **Edit Functionality**: Edit modals not yet implemented (shows alert)
-2. **SDK Platform Tab**: Placeholder content only
-3. **System Tab**: Placeholder content only
-4. **Security Button**: Placeholder alert only
-5. **Export Functionality**: Not yet implemented
-
----
-
-## 📝 **REPORTING ISSUES**
-
-If you find any issues during testing:
-
-1. **Note the exact steps** to reproduce
-2. **Check browser console** for errors (F12)
-3. **Check network tab** for failed requests
-4. **Note the error message** displayed to user
-5. **Document expected vs actual behavior**
-
----
-
-**Happy Testing!** 🚀
+**Happy Testing! 🎉**

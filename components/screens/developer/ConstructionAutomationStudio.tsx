@@ -16,7 +16,7 @@ import {
     Rocket,
     Settings,
     Server,
-    Tool,
+    Wrench,
     BarChart3,
     ClipboardList,
     Puzzle,

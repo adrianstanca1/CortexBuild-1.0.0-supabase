@@ -1,5 +1,5 @@
 // utils/fileUpload.ts
-import { supabase } from './supabaseClient';
+import { supabase } from '../supabaseClient';
 
 export interface UploadOptions {
   folder: string;
