@@ -18,6 +18,7 @@ import { useNavigation } from './hooks/useNavigation';
 import { logger } from './utils/logger';
 import { ChatbotWidget } from './components/chat/ChatbotWidget';
 import { supabase } from './supabaseClient';
+import { startAutonomousOps, isAutonomyEnabled } from './utils/autonomy';
 
 // Lazily loaded screens and feature modules
 const UnifiedDashboardScreen = lazy(() => import('./components/screens/UnifiedDashboardScreen'));
@@ -78,8 +79,7 @@ const Base44Clone = lazy(() =>
 const PlatformAdminScreen = lazy(() => import('./components/screens/admin/PlatformAdminScreen'));
 const SuperAdminDashboardScreen = lazy(() => import('./components/screens/admin/SuperAdminDashboardScreen'));
 const AdminControlPanel = lazy(() => import('./components/admin/AdminControlPanel'));
-const SuperAdminDashboardV2 = lazy(() => import('./components/admin/SuperAdminDashboardV2')); // V2 - Most Advanced
-const EnhancedSuperAdminDashboard = lazy(() => import('./components/admin/EnhancedSuperAdminDashboard'));
+const EnhancedSuperAdminDashboard = lazy(() => import('./components/admin/EnhancedSuperAdminDashboard')); // V2 - Most Advanced
 const AdvancedMLDashboard = lazy(() => import('./components/screens/dashboards/AdvancedMLDashboard'));
 const AnalyticsDashboardScreen = lazy(() => import('./components/screens/AnalyticsDashboardScreen'));
 const AdvancedSearchScreen = lazy(() => import('./components/screens/AdvancedSearchScreen'));
@@ -97,6 +97,14 @@ const EnhancedProjectManagement = lazy(() => import('./components/screens/Enhanc
 const EnhancedTeamCollaboration = lazy(() => import('./components/screens/EnhancedTeamCollaboration'));
 const EnhancedFinancialTracking = lazy(() => import('./components/screens/EnhancedFinancialTracking'));
 const EnhancedMobileExperience = lazy(() => import('./components/screens/EnhancedMobileExperience'));
+// V3 ULTIMATE Market-Leading Features
+const CommandCenter = lazy(() => import('./components/screens/CommandCenter'));
+const EnhancedTeamManagement = lazy(() => import('./components/screens/EnhancedTeamManagement'));
+const BudgetForecastingDashboard = lazy(() => import('./components/screens/BudgetForecastingDashboard'));
+const SafetyManagementDashboard = lazy(() => import('./components/screens/SafetyManagementDashboard'));
+const ResourceOptimizationDashboard = lazy(() => import('./components/screens/ResourceOptimizationDashboard'));
+const WeatherBasedScheduling = lazy(() => import('./components/screens/WeatherBasedScheduling'));
+const ChangeOrdersManagement = lazy(() => import('./components/screens/ChangeOrdersManagement'));
 
 const ScreenLoader: React.FC = () => (
     <div className="py-16 text-center text-slate-500">
@@ -151,7 +159,8 @@ const SCREEN_COMPONENTS: Record<Screen, React.ComponentType<any>> = {
     'automation-studio': ConstructionAutomationStudio,
     'developer-workspace': DeveloperWorkspaceScreen,
     'developer-console': EnhancedDeveloperConsole,
-    'super-admin-dashboard': SuperAdminDashboardScreen,
+    // Ensure super-admin points to a concrete component
+    'super-admin-dashboard': EnhancedSuperAdminDashboard,
     'sdk-developer': ProductionSDKDeveloperView,
     'my-apps-desktop': Base44Clone,
     // Global Marketplace
@@ -185,6 +194,14 @@ const SCREEN_COMPONENTS: Record<Screen, React.ComponentType<any>> = {
     'enhanced-team-collaboration': EnhancedTeamCollaboration,
     'enhanced-financial-tracking': EnhancedFinancialTracking,
     'enhanced-mobile-experience': EnhancedMobileExperience,
+    // V3 ULTIMATE Market-Leading Features
+    'command-center': CommandCenter,
+    'team-management': EnhancedTeamManagement,
+    'budget-forecasting': BudgetForecastingDashboard,
+    'safety-management': SafetyManagementDashboard,
+    'resource-optimization': ResourceOptimizationDashboard,
+    'weather-scheduling': WeatherBasedScheduling,
+    'change-orders': ChangeOrdersManagement,
     // Tools
     'placeholder-tool': PlaceholderToolScreen,
 };
@@ -480,6 +497,17 @@ const App: React.FC = () => {
     }, [currentUser]);
 
     useEffect(() => {
+        // Start/stop autonomous background ops when user or setting changes
+        let stop: (() => void) | null = null;
+        if (currentUser && isAutonomyEnabled()) {
+            stop = startAutonomousOps(currentUser);
+        }
+        return () => {
+            if (stop) stop();
+        };
+    }, [currentUser]);
+
+    useEffect(() => {
         const handleLogoutTrigger = () => {
             handleLogout();
         };
@@ -608,7 +636,7 @@ const App: React.FC = () => {
             console.log('🎯 SUPER ADMIN ROLE DETECTED - Rendering Super Admin Dashboard V2');
             return (
                 <Suspense fallback={<ScreenLoader />}>
-                    <SuperAdminDashboardV2
+                    <EnhancedSuperAdminDashboard
                         isDarkMode={true}
                         onNavigate={(section) => {
                             console.log('Navigating to section:', section);
@@ -639,8 +667,29 @@ const App: React.FC = () => {
     console.log('📺 Rendering screen:', screen);
     console.log('📺 Current user role:', currentUser?.role);
     console.log('📺 Navigation stack:', navigationStack);
+    // Direct render for known dashboards to avoid any mapping drift
+    if (screen === 'super-admin-dashboard') {
+        return (
+            <Suspense fallback={<ScreenLoader />}>
+                <EnhancedSuperAdminDashboard
+                    isDarkMode={true}
+                    onNavigate={(section) => {
+                        console.log('Navigating to section:', section);
+                        toast.success(`Opening ${section}...`);
+                    }}
+                />
+            </Suspense>
+        );
+    }
+
     const ScreenComponent = SCREEN_COMPONENTS[screen] || PlaceholderToolScreen;
-    console.log('📺 Screen component:', ScreenComponent.name);
+    if (!ScreenComponent) {
+        console.error('📺 Screen component missing for:', screen);
+        return (
+            <div className="p-8 text-red-700">Screen not available: {screen}</div>
+        );
+    }
+    console.log('📺 Screen component:', (ScreenComponent as any).name);
 
     if (screen === 'my-apps-desktop') {
         return (

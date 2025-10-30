@@ -151,6 +151,14 @@ export type Screen =
     | 'enhanced-team-collaboration'
     | 'enhanced-financial-tracking'
     | 'enhanced-mobile-experience'
+    // Market-Leading Features (V3 ULTIMATE)
+    | 'command-center'
+    | 'team-management'
+    | 'budget-forecasting'
+    | 'safety-management'
+    | 'resource-optimization'
+    | 'weather-scheduling'
+    | 'change-orders'
     // Tool screens
     | 'placeholder-tool';
 
