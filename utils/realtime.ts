@@ -1,6 +1,6 @@
 /**
  * Real-time WebSocket Service for CortexBuild
- * Handles real-time updates for notifications, tasks, and project changes
+ * Provides real-time updates for notifications, tasks, and project changes
  */
 
 import { supabase } from '../supabaseClient';
