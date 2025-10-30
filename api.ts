@@ -26,7 +26,9 @@ import { supabase } from './supabaseClient';
 const LATENCY = 200;
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+// Initialize Google AI only if API key is available
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY || '';
+const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
 const model = 'gemini-2.5-flash';
 
 const checkPermissions = (user: User, action: PermissionAction, subject: PermissionSubject) => {
@@ -1352,6 +1354,19 @@ export const getAITaskSuggestions = async (description: string, allUsers: User[]
     `;
     
     try {
+        // Check if AI is available
+        if (!ai) {
+            console.warn('Google AI not configured - returning mock suggestion');
+            return {
+                id: 'mock-suggestion',
+                title: 'Review Project Status',
+                description: 'Check project progress and upcoming deadlines',
+                priority: 'medium',
+                estimatedTime: '10 minutes',
+                link: { screen: 'projects' as any, params: {} }
+            };
+        }
+        
         const response = await ai.models.generateContent({
             model: model,
             contents: prompt,
@@ -1608,6 +1623,12 @@ export const analyzeDrawingAndGenerateTags = async (drawing: { title: string, nu
     `;
     
      try {
+        // Check if AI is available
+        if (!ai) {
+            console.warn('Google AI not configured - returning mock tags');
+            return ['General', 'Drawing', 'Construction'];
+        }
+        
         const response = await ai.models.generateContent({
             model: model,
             contents: prompt,

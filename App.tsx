@@ -97,6 +97,14 @@ const EnhancedProjectManagement = lazy(() => import('./components/screens/Enhanc
 const EnhancedTeamCollaboration = lazy(() => import('./components/screens/EnhancedTeamCollaboration'));
 const EnhancedFinancialTracking = lazy(() => import('./components/screens/EnhancedFinancialTracking'));
 const EnhancedMobileExperience = lazy(() => import('./components/screens/EnhancedMobileExperience'));
+// V3 ULTIMATE Market-Leading Features
+const CommandCenter = lazy(() => import('./components/screens/CommandCenter'));
+const EnhancedTeamManagement = lazy(() => import('./components/screens/EnhancedTeamManagement'));
+const BudgetForecastingDashboard = lazy(() => import('./components/screens/BudgetForecastingDashboard'));
+const SafetyManagementDashboard = lazy(() => import('./components/screens/SafetyManagementDashboard'));
+const ResourceOptimizationDashboard = lazy(() => import('./components/screens/ResourceOptimizationDashboard'));
+const WeatherBasedScheduling = lazy(() => import('./components/screens/WeatherBasedScheduling'));
+const ChangeOrdersManagement = lazy(() => import('./components/screens/ChangeOrdersManagement'));
 
 const ScreenLoader: React.FC = () => (
     <div className="py-16 text-center text-slate-500">
@@ -185,6 +193,14 @@ const SCREEN_COMPONENTS: Record<Screen, React.ComponentType<any>> = {
     'enhanced-team-collaboration': EnhancedTeamCollaboration,
     'enhanced-financial-tracking': EnhancedFinancialTracking,
     'enhanced-mobile-experience': EnhancedMobileExperience,
+    // V3 ULTIMATE Market-Leading Features
+    'command-center': CommandCenter,
+    'team-management': EnhancedTeamManagement,
+    'budget-forecasting': BudgetForecastingDashboard,
+    'safety-management': SafetyManagementDashboard,
+    'resource-optimization': ResourceOptimizationDashboard,
+    'weather-scheduling': WeatherBasedScheduling,
+    'change-orders': ChangeOrdersManagement,
     // Tools
     'placeholder-tool': PlaceholderToolScreen,
 };

@@ -160,6 +160,48 @@ const Sidebar: React.FC<SidebarProps> = ({ project, navigateTo, navigateToModule
             isModule: true
         },
         {
+            label: '🎯 Command Center',
+            screen: 'command-center',
+            icon: WandSparklesIcon,
+            isModule: true
+        },
+        {
+            label: 'Team Management',
+            screen: 'team-management',
+            icon: BuildingOfficeIcon,
+            isModule: true
+        },
+        {
+            label: 'Budget Forecasting',
+            screen: 'budget-forecasting',
+            icon: DocumentIcon,
+            isModule: true
+        },
+        {
+            label: 'Safety Dashboard',
+            screen: 'safety-management',
+            icon: CheckBadgeIcon,
+            isModule: true
+        },
+        {
+            label: 'Resource Optimization',
+            screen: 'resource-optimization',
+            icon: TicketIcon,
+            isModule: true
+        },
+        {
+            label: '☁️ Weather Scheduling',
+            screen: 'weather-scheduling',
+            icon: SunIcon,
+            isModule: true
+        },
+        {
+            label: 'Change Orders',
+            screen: 'change-orders',
+            icon: DocumentDuplicateIcon,
+            isModule: true
+        },
+        {
             label: 'Innovation Sandbox',
             screen: 'developer-dashboard',
             icon: WandSparklesIcon,
