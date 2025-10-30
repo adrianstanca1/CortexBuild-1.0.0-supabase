@@ -1,4 +1,4 @@
-import { PlatformDashboardData } from '../types/platformAdmin';
+import { PlatformDashboardData } from '../../types/platformAdmin';
 
 const API_BASE = import.meta.env.PROD ? '/api' : 'http://localhost:3001/api';
 
