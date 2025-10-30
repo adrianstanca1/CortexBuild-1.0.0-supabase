@@ -196,11 +196,7 @@ ON CONFLICT (id) DO NOTHING;
 -- Super Admin: parola123
 -- Company Admin: lolozania1
 -- Developer: password123
-INSERT INTO users (id, email, password_hash, name, role, company_id, phone) VALUES
-    ('user-1', 'adrian.stanca1@gmail.com', '$2a$10$YourHashedPasswordHere1', 'Adrian Stanca', 'super_admin', 'company-1', NULL),
-    ('user-2', 'adrian@ascladdingltd.co.uk', '$2a$10$YourHashedPasswordHere2', 'Adrian ASC', 'company_admin', 'company-2', '+447700000001'),
-    ('user-3', 'adrian.stanca1@icloud.com', '$2a$10$YourHashedPasswordHere3', 'Adrian Dev', 'developer', 'company-1', NULL)
-ON CONFLICT (email) DO NOTHING;
+-- Seed Supabase auth users via scripts/createSupabaseUsers.ts to ensure IDs align with auth.users
 
 -- ============================================================================
 -- SEED DATA - 6 Marketplace Apps (Pre-approved)
@@ -239,7 +235,7 @@ CREATE POLICY users_super_admin_access ON users
     USING (
         EXISTS (
             SELECT 1 FROM users 
-            WHERE id = current_setting('app.current_user_id', true)::text
+            WHERE id = current_setting('app.current_user_id', true)::uuid
             AND role = 'super_admin'
         )
     );
