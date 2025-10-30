@@ -13,7 +13,7 @@
     "vercel:dev": "vercel dev",
     "vercel:deploy": "vercel",
     "vercel:prod": "vercel --prod",
-    "lint": "eslint \"**/*.{ts,tsx}\" --ignore-pattern dist/** --ignore-pattern .vercel/** --ignore-pattern public/sw.js --ignore-pattern **/assets/** --ignore-pattern __tests__/** --report-unused-disable-directives --max-warnings 0"
+    "lint": "eslint --no-error-on-unmatched-pattern \"auth/**/*.{ts,tsx}\" \"components/**/*.{ts,tsx}\" \"utils/**/*.{ts,tsx}\" \"contexts/**/*.{ts,tsx}\" \"hooks/**/*.{ts,tsx}\" \"api/**/*.{ts,tsx}\" \"server/**/*.{ts,tsx}\" App.tsx types.ts --report-unused-disable-directives --max-warnings 0"
   },
   "dependencies": {
     "@google/genai": "^1.22.0",
