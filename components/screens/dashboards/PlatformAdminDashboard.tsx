@@ -8,7 +8,7 @@
 import React, { useState, useEffect } from 'react';
 import { User, Screen } from '../../../types';
 import { PlatformDashboardData } from '../../../types/platformAdmin';
-import * as platformAPI from '../../../api/platformAdmin';
+import * as platformAPI from '../../../lib/services/platformAdmin';
 
 interface PlatformAdminDashboardProps {
     currentUser: User;
@@ -309,4 +309,3 @@ const PlatformAdminDashboard: React.FC<PlatformAdminDashboardProps> = ({ current
 };
 
 export default PlatformAdminDashboard;
-
