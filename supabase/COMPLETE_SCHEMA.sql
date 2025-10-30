@@ -68,6 +68,13 @@ CREATE TABLE IF NOT EXISTS projects (
 CREATE INDEX IF NOT EXISTS idx_projects_company_id ON projects(company_id);
 CREATE INDEX IF NOT EXISTS idx_projects_status ON projects(status);
 
+-- Ensure legacy tables have required columns
+ALTER TABLE companies ADD COLUMN IF NOT EXISTS industry TEXT;
+ALTER TABLE companies ADD COLUMN IF NOT EXISTS email TEXT;
+ALTER TABLE companies ADD COLUMN IF NOT EXISTS max_users INTEGER DEFAULT 10;
+ALTER TABLE companies ADD COLUMN IF NOT EXISTS max_projects INTEGER DEFAULT 5;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS phone TEXT;
+
 -- ============================================================================
 -- MARKETPLACE APPS (6 Pre-approved Apps)
 -- ============================================================================
@@ -127,7 +134,7 @@ CREATE INDEX IF NOT EXISTS idx_company_app_installations_app_id ON company_app_i
 CREATE TABLE IF NOT EXISTS app_review_history (
     id TEXT PRIMARY KEY DEFAULT ('review-' || gen_random_uuid()::text),
     app_id TEXT REFERENCES sdk_apps(id) ON DELETE CASCADE,
-    reviewer_id TEXT REFERENCES users(id),
+    reviewer_id UUID REFERENCES users(id),
     status TEXT NOT NULL,
     comments TEXT,
     reviewed_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -142,7 +149,7 @@ CREATE INDEX IF NOT EXISTS idx_app_review_history_app_id ON app_review_history(a
 CREATE TABLE IF NOT EXISTS app_analytics (
     id TEXT PRIMARY KEY DEFAULT ('analytics-' || gen_random_uuid()::text),
     app_id TEXT REFERENCES sdk_apps(id) ON DELETE CASCADE,
-    user_id TEXT REFERENCES users(id),
+    user_id UUID REFERENCES users(id),
     event_type TEXT NOT NULL,
     event_data JSONB,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -157,7 +164,7 @@ CREATE INDEX IF NOT EXISTS idx_app_analytics_created_at ON app_analytics(created
 
 CREATE TABLE IF NOT EXISTS activities (
     id TEXT PRIMARY KEY DEFAULT ('activity-' || gen_random_uuid()::text),
-    user_id TEXT REFERENCES users(id),
+    user_id UUID REFERENCES users(id),
     company_id TEXT REFERENCES companies(id),
     action TEXT NOT NULL,
     entity_type TEXT,
@@ -189,8 +196,6 @@ ON CONFLICT (id) DO NOTHING;
 -- Super Admin: parola123
 -- Company Admin: lolozania1
 -- Developer: password123
-
-    phone TEXT,
 INSERT INTO users (id, email, password_hash, name, role, company_id, phone) VALUES
     ('user-1', 'adrian.stanca1@gmail.com', '$2a$10$YourHashedPasswordHere1', 'Adrian Stanca', 'super_admin', 'company-1', NULL),
     ('user-2', 'adrian@ascladdingltd.co.uk', '$2a$10$YourHashedPasswordHere2', 'Adrian ASC', 'company_admin', 'company-2', '+447700000001'),
