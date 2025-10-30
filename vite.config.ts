@@ -27,6 +27,15 @@ export default defineConfig(({ mode }) => {
         'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY)
       },
       build: {
+        // Production optimizations
+        minify: 'terser',
+        terserOptions: {
+          compress: {
+            drop_console: true,
+            drop_debugger: true,
+          },
+        },
+        sourcemap: false,
         rollupOptions: {
           output: {
             manualChunks(id) {
@@ -66,9 +75,13 @@ export default defineConfig(({ mode }) => {
               if (id.includes('node_modules')) {
                 return 'vendor';
               }
-            }
+            },
+            chunkFileNames: 'assets/[name]-[hash].js',
+            entryFileNames: 'assets/[name]-[hash].js',
+            assetFileNames: 'assets/[name]-[hash].[ext]',
           }
-        }
+        },
+        chunkSizeWarningLimit: 1000,
       },
       resolve: {
         alias: {
