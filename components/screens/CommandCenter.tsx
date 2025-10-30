@@ -25,6 +25,7 @@ import {
     MapPin
 } from 'lucide-react';
 import { User } from '../../types';
+import { supabase } from '../../supabaseClient';
 
 interface CommandCenterProps {
     currentUser: User;
@@ -60,92 +61,80 @@ export const CommandCenter: React.FC<CommandCenterProps> = ({ currentUser, navig
     }, []);
 
     const loadCommandCenterData = async () => {
-        // Mock data - in production this would come from API
-        setMetrics([
-            {
-                title: 'Active Projects',
-                value: 12,
-                change: 8.5,
-                trend: 'up',
-                icon: Briefcase,
-                color: 'blue',
-                onClick: () => navigateTo('projects')
-            },
-            {
-                title: 'Total Budget',
-                value: '$2.4M',
-                change: 12.3,
-                trend: 'up',
-                icon: DollarSign,
-                color: 'green',
-                onClick: () => navigateTo('financial-management')
-            },
-            {
-                title: 'Team Members',
-                value: 48,
-                change: 6.2,
-                trend: 'up',
-                icon: Users,
-                color: 'purple',
-                onClick: () => navigateTo('enhanced-team-collaboration')
-            },
-            {
-                title: 'Tasks Completion',
-                value: '94%',
-                change: 3.1,
-                trend: 'up',
-                icon: Target,
-                color: 'orange',
-                onClick: () => navigateTo('tasks')
-            },
-            {
-                title: 'Safety Score',
-                value: '98%',
-                change: 0.5,
-                trend: 'up',
-                icon: Shield,
-                color: 'red',
-                onClick: () => navigateTo('quality-control-vision')
-            },
-            {
-                title: 'On-Time Rate',
-                value: '96%',
-                change: 2.3,
-                trend: 'up',
-                icon: Clock,
-                color: 'cyan',
-                onClick: () => navigateTo('analytics-dashboard')
+        try {
+            if (!supabase) {
+                setLoading(false);
+                return;
             }
-        ]);
 
-        setAlerts([
-            {
-                id: '1',
-                type: 'critical',
-                title: 'Budget Alert',
-                message: 'Project Riverside Complex is 85% over budget',
-                timestamp: new Date(Date.now() - 300000),
-                action: 'View Project'
-            },
-            {
-                id: '2',
-                type: 'warning',
-                title: 'Weather Alert',
-                message: 'Heavy rain forecasted for next 3 days',
-                timestamp: new Date(Date.now() - 600000),
-                action: 'Adjust Schedule'
-            },
-            {
-                id: '3',
-                type: 'info',
-                title: 'Milestone Achieved',
-                message: 'Downtown Plaza reached Phase 2 completion',
-                timestamp: new Date(Date.now() - 900000),
-                action: 'View Details'
-            }
-        ]);
+            // Projects count
+            const { count: projectsCount } = await supabase
+                .from('projects')
+                .select('id', { count: 'exact', head: true });
 
-        setLoading(false);
+            // Users count
+            const { count: usersCount } = await supabase
+                .from('users')
+                .select('id', { count: 'exact', head: true });
+
+            // Tasks completion
+            const [{ count: totalTasks }, { count: completedTasks }] = await Promise.all([
+                supabase.from('tasks').select('id', { count: 'exact', head: true }),
+                supabase.from('tasks').select('id', { count: 'exact', head: true }).eq('status', 'completed')
+            ]);
+            const completion = totalTasks && completedTasks ? Math.round((completedTasks / Math.max(totalTasks, 1)) * 100) : 0;
+
+            // Recent notifications as alerts (last 10)
+            const { data: notif } = await supabase
+                .from('notifications')
+                .select('id, type, message, created_at')
+                .eq('user_id', currentUser.id)
+                .order('created_at', { ascending: false })
+                .limit(10);
+
+            const mappedAlerts = (notif || []).map(n => ({
+                id: n.id,
+                type: (n.type as 'critical' | 'warning' | 'info') || 'info',
+                title: n.type ? n.type.charAt(0).toUpperCase() + n.type.slice(1) : 'Info',
+                message: n.message || '',
+                timestamp: new Date(n.created_at),
+                action: undefined
+            }));
+
+            setMetrics([
+                {
+                    title: 'Active Projects',
+                    value: projectsCount ?? 0,
+                    change: 0,
+                    trend: 'stable',
+                    icon: Briefcase,
+                    color: 'blue',
+                    onClick: () => navigateTo('projects')
+                },
+                {
+                    title: 'Team Members',
+                    value: usersCount ?? 0,
+                    change: 0,
+                    trend: 'stable',
+                    icon: Users,
+                    color: 'purple',
+                    onClick: () => navigateTo('enhanced-team-collaboration')
+                },
+                {
+                    title: 'Tasks Completion',
+                    value: `${completion}%`,
+                    change: 0,
+                    trend: 'stable',
+                    icon: Target,
+                    color: 'orange',
+                    onClick: () => navigateTo('tasks')
+                }
+            ]);
+
+            setAlerts(mappedAlerts);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const getMetricColor = (color: string) => {
